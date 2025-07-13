@@ -107,6 +107,10 @@ peer chaincode query -C coldchannel -n Vax-Ledger -c '{"Args":["VaxContract:Read
 ```
 peer chaincode query -C coldchannel -n Vax-Ledger -c '{"function":"GetAllBatch","Args":[]}'
 ```
+### Query Temp History
+```
+peer chaincode query   -C coldchannel   -n Vax-Ledger   -c '{"Args":["TempContract:GetTemperatureLogHistory", "Batch-01"]}'
+```
 ### Delete Invoke
 ```
 peer chaincode invoke \
@@ -156,6 +160,17 @@ peer chaincode invoke \
 
 
 ```
+
+# UI
+```
+cd SampleApp
+```
+## To run the Client App
+```
+go run .
+```
+
+## ALternative Running Cammands for Org 3
 ### org3 env var
 ```
 export CORE_PEER_LOCALMSPID=Org3MSP
@@ -172,6 +187,7 @@ peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.exa
 
 
 ```
+
 ## To Down the Network
 ```
 ./network.sh down
