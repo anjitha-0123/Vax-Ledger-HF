@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vax-Ledger</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #0c0b0b;
+      color: #dcdcdc;
+    }
+
+    h1, h2, h3 {
+      color: #8e9092;
+    }
+
+    form {
+      background-color: #333;
+      padding: 20px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      max-width: 500px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin-top: 10px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #0e501c;
+      color: white;
+      cursor: pointer;
+    }
+
+    button[type="reset"] {
+      background-color: #e74c3c;
+    }
+
+    pre {
+      background-color: #222;
+      padding: 15px;
+      border-radius: 5px;
+      max-width: 500px;
+      overflow-x: auto;
+      color: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Transporter Dashboard</h1>
+
+  <h2>Add Temperature Log</h2>
+  <form id="tempForm" onsubmit="addTemp(event)">
+    <label>Batch ID:</label>
+    <input id="tempBatchID" type="text" required />
+    <label>Temperature Now (°C):</label>
+    <input id="tempNow" type="number" required />
+    <button type="submit">Add Temp Log</button>
+    <button type="reset">Clear</button>
+  </form>
+
+  <h2>Delivery Controls</h2>
+  <form onsubmit="startDelivery(event)">
+    <label>Batch ID:</label>
+    <input id="startBatchID" type="text" required />
+    <button type="submit">Start Delivery</button>
+  </form>
+
+  <form onsubmit="completeDelivery(event)">
+    <label>Batch ID:</label>
+    <input id="completeBatchID" type="text" required />
+    <button type="submit">Complete Delivery</button>
+  </form>
+
+  <h1>Dealer Dashboard</h1>
+
+  <h2>Query Temperature History</h2>
+  <form id="tempQueryForm" onsubmit="readTemp(event)">
+    <label>Batch ID:</label>
+    <input id="queryTempBatchID" type="text" required />
+    <button type="submit">Query Temp Logs</button>
+  </form>
+
+  <h3>Temp History Result</h3>
+  <pre id="tempResultBox"></pre>
+
+  <h2>Get Delivery Status</h2>
+  <form onsubmit="getDeliveryStatus(event)">
+    <label>Batch ID:</label>
+    <input id="statusBatchID" type="text" required />
+    <button type="submit">Check Status</button>
+  </form>
+
+  <h3>Delivery Status Result</h3>
+  <pre id="statusResultBox"></pre>
+
+  <script>
+    const addTemp = async (event) => {
+      event.preventDefault();
+      const batchID = document.getElementById("tempBatchID").value;
+      const tempNow = parseInt(document.getElementById("tempNow").value);
+
+      if (!batchID || isNaN(tempNow)) {
+        alert("Please enter all fields correctly.");
+        return;
+      }
+
+      const payload = {
+        batchID,
+        tempnow: tempNow
+      };
+
+      try {
+        const response = await fetch("/api/temp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        alert("Temperature log added for BatchID: " + data.batchID);
+      } catch (err) {
+        console.error(err);
+        alert("Error adding temperature log");
+      }
+    };
+
+    const readTemp = async (event) => {
+      event.preventDefault();
+      const batchID = document.getElementById("queryTempBatchID").value;
+
+      try {
+        const response = await fetch(`/api/temp/${batchID}`);
+        const data = await response.json();
+        document.getElementById("tempResultBox").innerText = JSON.stringify(data.logs, null, 2);
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching temperature logs");
+      }
+    };
+
+    const startDelivery = async (event) => {
+      event.preventDefault();
+      const batchID = document.getElementById("startBatchID").value;
+
+      try {
+        const response = await fetch(`/api/delivery/start/${batchID}`, { method: "POST" });
+        const data = await response.json();
+        alert(data.message);
+      } catch (err) {
+        console.error(err);
+        alert("Error starting delivery");
+      }
+    };
+
+    const completeDelivery = async (event) => {
+      event.preventDefault();
+      const batchID = document.getElementById("completeBatchID").value;
+
+      try {
+        const response = await fetch(`/api/delivery/complete/${batchID}`, { method: "POST" });
+        const data = await response.json();
+        alert(data.message);
+      } catch (err) {
+        console.error(err);
+        alert("Error completing delivery");
+      }
+    };
+
+    const getDeliveryStatus = async (event) => {
+      event.preventDefault();
+      const batchID = document.getElementById("statusBatchID").value;
+
+      try {
+        const response = await fetch(`/api/delivery/status/${batchID}`);
+        const data = await response.json();
+        document.getElementById("statusResultBox").innerText = data.status;
+      } catch (err) {
+        console.error(err);
+        alert("Error getting delivery status");
+      }
+    };
+  </script>
+</body>
+</html>
+
+
+<!-- 
+<h1>Manufacturer Dashboard</h1>
+  
+<h2>Create Vaccine Batch</h2>
+<form id="addForm" onsubmit="addData(event)">
+<label>BatchID:</label>
+<input id="batchID" type="text" required />
+<label>Manufacturer:</label>
+<input id="Manufacturer" type="text" required />
+<label>Vaccine Type:</label>
+<input id="vaccineType" type="text" required />
+<label>Manufacture Date:</label>
+<input id="manufactureDate" type="text" required />
+<label>Expiry Date:</label>
+<input id="expiryDate" type="text" required />
+<label>Min Temp:</label>
+<input type="number" id="minTemp" />
+<label>Max Temp:</label>
+<input type="number" id="maxTemp" />
+<button type="submit">Create Batch</button>
+<button type="reset">Clear</button>
+</form>
+
+<h2>Query Batch</h2>
+<form id="readForm" onsubmit="readData(event)">
+<label>Batch ID:</label>
+<input id="batchidinput" type="text" required />
+<button type="submit">Query Batch</button>
+<button type="reset">Clear</button>
+</form>
+
+<h2>Query Result</h2>
+<pre id="resultBox"></pre>
+
+  -->
+
+
+<!-- 
+  //Manufacturer
+
+  const addData = async (event) => {
+event.preventDefault();
+const batchID = document.getElementById("batchID").value;
+const manufacturer = document.getElementById("Manufacturer").value;
+const vaccineType = document.getElementById("vaccineType").value;
+const manufactureDate = document.getElementById("manufactureDate").value;
+const expiryDate = document.getElementById("expiryDate").value;
+const minTemp = parseInt(document.getElementById("minTemp").value);
+const maxTemp = parseInt(document.getElementById("maxTemp").value);
+
+const VaccineData = {
+  docType: "vaccineBatch",
+  batchID: batchID,
+  manufacturer: manufacturer,
+  vaccineType: vaccineType,
+  manufactureDate: manufactureDate,
+  expiryDate: expiryDate,
+  minTemp: minTemp,
+  maxTemp: maxTemp,
+};
+
+console.log("Sending VaccineData:", VaccineData);
+console.log("Type of minTemp:", typeof minTemp);
+console.log("Type of maxTemp:", typeof maxTemp);
+
+if (
+  batchID.length === 0 ||
+  manufacturer.length === 0 ||
+  vaccineType.length === 0 ||
+  manufactureDate.length === 0 ||
+  expiryDate.length === 0 ||
+  isNaN(minTemp) ||
+  isNaN(maxTemp)
+) {
+  alert("Please enter the data properly");
+} else {
+  try {
+    const response = await fetch("/api/batch", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(VaccineData),
+    });
+    console.log("RESPONSE:", response);
+    const data = await response.json();
+    console.log("DATA:", data);
+    alert("Vaccine Batch Created");
+  } catch (err) {
+    alert("Error");
+    console.log(err);
+  }
+}
+};
+
+const readData = async (event) => {
+event.preventDefault();
+const batchID = document.getElementById("batchidinput").value;
+if (batchID.length === 0) {
+  alert("Please Enter the valid ID");
+} else {
+  try {
+    const response = await fetch(`/api/batch/${batchID}`);
+    let responseData = await response.json();
+    console.log("response data:", responseData);
+    document.getElementById("resultBox").innerText = JSON.stringify(
+      responseData,
+      null,
+      2
+    );
+    alert(JSON.stringify(responseData));
+  } catch (err) {
+    alert("Error");
+    console.log(err);
+  }
+}
+}; -->
