@@ -26,7 +26,10 @@ Secure tracking using Hyperledger Fabric.
 
 Simple API access for apps and dashboards.
 
-
+## To Clone this Repository
+```
+git@github.com:anjitha-0123/Vax-Ledger-HF.git
+```
 
 ## To Build the Network
 ```
