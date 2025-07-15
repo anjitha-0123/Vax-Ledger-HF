@@ -26,6 +26,12 @@ Secure tracking using Hyperledger Fabric.
 
 Simple API access for apps and dashboards.
 
+## Tech Stack
+![Hyperledger Fabric](https://img.shields.io/badge/Hyperledger%20Fabric-2C3E50?style=for-the-badge&logo=hyperledger&logoColor=white)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=Docker&logoColor=white)
+![HTML](https://img.shields.io/badge/-HTML-E34F26?style=flat-square&logo=HTML5&logoColor=white)
+
 ## To Clone this Repository
 ```
 git@github.com:anjitha-0123/Vax-Ledger-HF.git
