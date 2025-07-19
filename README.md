@@ -36,6 +36,19 @@ Simple API access for apps and dashboards.
 ```
 git@github.com:anjitha-0123/Vax-Ledger-HF.git
 ```
+## Download Fabric
+Note: Open a terminal in the CHF Folder & Execute the Following Commands
+```
+curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh
+```
+```
+./install-fabric.sh -f '2.5.12' -c '1.5.15'
+```
+```
+sudo cp fabric-samples/bin/* /usr/local/bin
+```
+
+
 
 ## To Build the Network
 ```
